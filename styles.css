@@ -43,6 +43,21 @@ h1 {
     display: none;
 }
 
+#instructions {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+#instructions img {
+    width: 100px;
+    height: auto;
+    border: 2px solid #0ff;
+    border-radius: 5px;
+    box-shadow: 0 0 10px #0ff;
+}
+
 table {
     width: 100%;
     border-collapse: collapse;

@@ -90,7 +90,7 @@ function calculateGPA(rows) {
         'GE23121': 1, // Problem Solving and C Programming Laboratory
         'GE23122': 1, // Engineering Practices Laboratory
         'GE23131': 4, // Engineering Graphics
-        'HS23111': 2, // Communicative English
+        'HS23111': 3, // Communicative English
         'MA23111': 4, // Matrices and Calculus
     };
 

@@ -6,10 +6,17 @@ document.getElementById('fileInput').addEventListener('change', function(event) 
         return;
     }
 
+    // Check the file type
+    const allowedTypes = ['text/csv', 'application/vnd.ms-excel'];
+    if (!allowedTypes.includes(file.type)) {
+        alert('Invalid file type. Please upload a CSV file.');
+        return;
+    }
+
     const reader = new FileReader();
     reader.onload = function(event) {
         const text = event.target.result;
-        const rows = text.split('\n').map(row => row.split(',').map(cell => cell.replace(/"/g, '').trim())); // Remove quotes and trim
+        const rows = text.split('\n').map(row => row.split(',').map(cell => cell.replace(/"/g, '').trim()));
 
         console.log('Parsed CSV Rows:', rows); // Log parsed CSV rows
 
@@ -21,6 +28,8 @@ document.getElementById('fileInput').addEventListener('change', function(event) 
             console.log('Headers:', headers); // Log headers
 
             const tableContainer = document.getElementById('tableContainer');
+            tableContainer.classList.remove('hidden'); // Show the table container
+
             let tableHTML = '<table><thead><tr>';
 
             // Add header row
@@ -51,11 +60,10 @@ document.getElementById('fileInput').addEventListener('change', function(event) 
             tableHTML += '</tbody></table>';
             tableContainer.innerHTML = tableHTML;
 
-            // Show table and calculate GPA
-            tableContainer.classList.remove('hidden');
+            // Calculate GPA
             const gpaContainer = document.getElementById('gpaContainer');
+            gpaContainer.classList.remove('hidden'); // Show the GPA container
             gpaContainer.innerHTML = `<p>GPA: ${calculateGPA(rows)}</p>`;
-            gpaContainer.classList.remove('hidden');
         }
     };
 
@@ -84,7 +92,6 @@ function calculateGPA(rows) {
         'GE23131': 4, // Engineering Graphics
         'HS23111': 2, // Communicative English
         'MA23111': 4, // Matrices and Calculus
-        // Adjust credit points for other subjects as needed
     };
 
     let totalCredits = 0;
@@ -92,8 +99,8 @@ function calculateGPA(rows) {
 
     // Loop through rows and calculate weighted grade points
     rows.slice(1).forEach(row => {
-        const subjectCode = row[3].trim(); // Subject code is in the 4th column
-        const grade = row[5].trim(); // Grade is in the 6th column
+        const subjectCode = row[3].replace(/"/g, '').trim(); // Subject code is in the fourth column
+        const grade = row[5].replace(/"/g, '').trim(); // Grade is in the sixth column
         if (subjectCode in creditPoints && grade in gradePoints) {
             const creditPoint = creditPoints[subjectCode];
             const gradePoint = gradePoints[grade];

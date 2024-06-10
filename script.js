@@ -84,11 +84,11 @@ function calculateGPA(rows) {
 
     const creditPoints = {
         'CY23111': 3, // Chemistry
-        'CY23121': 2, // Chemistry Laboratory
+        'CY23121': 1, // Chemistry Laboratory
         'GE23111': 3, // Problem Solving and C Programming
         'GE23112': 0, // Heritage of Tamil
         'GE23121': 1, // Problem Solving and C Programming Laboratory
-        'GE23122': 2, // Engineering Practices Laboratory
+        'GE23122': 1, // Engineering Practices Laboratory
         'GE23131': 4, // Engineering Graphics
         'HS23111': 3, // Communicative English
         'MA23111': 4, // Matrices and Calculus

@@ -8,17 +8,17 @@
 </head>
 <body>
     <div class="container">
-        <h1>Paste Data to Calculate GPA</h1>
-        <div id="textInputContainer">
-            <textarea id="textInput" placeholder="Paste your data here..."></textarea>
-            <button id="parseButton">Parse Data</button>
+        <h1>Upload CSV File to Calculate GPA</h1>
+        <div id="fileInputContainer">
+            <label for="fileInput" id="fileInputLabel">Choose File</label>
+            <input type="file" id="fileInput" accept=".csv,text/csv">
         </div>
         <div id="instructions">
             <p>1. Go to <a href="https://rituat.kalvierp.com/login">rituat.kalvierp.com/login</a> and login.</p>
             <img src="in1.jpeg" alt="Instruction 1">
             <p>2. Select Grade Book and click on the CSV option above the semester result data.</p>
             <img src="in2.jpeg" alt="Instruction 2">
-            <p>3. After downloading, paste the CSV data here to calculate the GPA.</p>
+            <p>3. After downloading, upload the CSV file here to calculate the GPA.</p>
             <img src="in3.jpeg" alt="Instruction 3">
         </div>
         <div id="tableContainer" class="hidden"></div>

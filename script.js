@@ -133,14 +133,3 @@ const creditPoints = {
     'HS23111': 3, // Communicative English
     'MA23111': 4, // Matrices and Calculus
 };
-
-document.getElementById('toggleInstructions').addEventListener('click', function() {
-    const instructions = document.getElementById('instructions');
-    if (instructions.classList.contains('hidden')) {
-        instructions.classList.remove('hidden');
-        this.textContent = 'Hide Instructions';
-    } else {
-        instructions.classList.add('hidden');
-        this.textContent = 'Show Instructions';
-    }
-});

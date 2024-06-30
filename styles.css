@@ -4,11 +4,6 @@ body {
     padding: 0;
     background-color: #000;
     color: #0ff;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    min-height: 100vh;
-    flex-direction: column;
     text-align: center;
 }
 
@@ -26,6 +21,8 @@ h1 {
     box-shadow: 0 0 10px #0ff;
     border-radius: 10px;
     background: rgba(0, 0, 0, 0.8);
+    margin: auto; /* Center align container */
+    margin-top: 20px; /* Add space at the top */
 }
 
 #fileInputContainer {
@@ -83,6 +80,7 @@ button {
     border-radius: 5px;
     cursor: pointer;
     transition: background-color 0.3s;
+    margin-bottom: 20px;
 }
 
 button:hover {
@@ -107,6 +105,8 @@ button:hover {
     background: transparent;
     color: #0ff;
     text-align: center;
+    width: 100%;
+    max-width: 200px; /* Adjust width for mobile */
 }
 
 .hidden {
@@ -128,4 +128,24 @@ th, td {
 th {
     background-color: #0bb;
     color: #000;
+}
+
+@media (max-width: 600px) {
+    /* Adjustments for smaller screens (e.g., mobile) */
+    .container {
+        width: 100%;
+        margin-top: 0;
+        border-radius: 0;
+        box-shadow: none;
+        padding: 10px;
+    }
+
+    #previousGPA {
+        max-width: 100%; /* Full width on mobile */
+    }
+
+    /* Ensure images in instructions are responsive */
+    #instructions img {
+        max-width: 100%;
+    }
 }

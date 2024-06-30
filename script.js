@@ -105,11 +105,25 @@ document.getElementById('fileInput').addEventListener('change', function(event) 
 
             // Hide the instructions
             document.getElementById('instructions').classList.add('hidden');
+
+            // Add animations to GPA calculation details
+            animateCalculationDetails();
         }
     };
 
     reader.readAsText(file);
 });
+
+function animateCalculationDetails() {
+    const gpaDetails = document.querySelectorAll('#gpaContainer ul li, #gpaContainer p');
+    gpaDetails.forEach((detail, index) => {
+        detail.style.opacity = 0;
+        detail.style.transition = `opacity 0.5s ease ${index * 0.2}s`;
+        setTimeout(() => {
+            detail.style.opacity = 1;
+        }, index * 200);
+    });
+}
 
 const gradePoints = {
     'O': 10,

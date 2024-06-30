@@ -1,106 +1,99 @@
-document.getElementById('fileInput').addEventListener('change', function(event) {
-    const file = event.target.files[0];
-
-    if (!file) {
-        alert('Please upload a file first.');
+document.getElementById('parseButton').addEventListener('click', function() {
+    const textInput = document.getElementById('textInput').value.trim();
+    if (!textInput) {
+        alert('Please paste your data first.');
         return;
     }
 
-    const allowedTypes = ['text/csv', 'application/vnd.ms-excel'];
-    if (!allowedTypes.includes(file.type)) {
-        alert('Invalid file type. Please upload a CSV file.');
-        return;
-    }
+    const rows = textInput.split('\n').map(row => row.split('\t').map(cell => cell.trim()));
+    console.log('Parsed Text Rows:', rows); // Log parsed text rows
 
-    const reader = new FileReader();
-    reader.onload = function(event) {
-        const text = event.target.result;
-        const rows = text.split('\n').map(row => row.split(',').map(cell => cell.replace(/"/g, '').trim()));
+    // Specify the column names
+    const columnsToDisplay = ['Subject Code', 'Subject Title', 'Grade'];
 
-        const columnsToDisplay = ['Subject Code', 'Subject Title', 'Grade'];
+    if (rows.length > 0) {
+        const headers = rows[0].map(header => header.trim()); // Trim whitespace from headers
+        console.log('Headers:', headers); // Log headers
 
-        if (rows.length > 0) {
-            const headers = rows[0].map(header => header.trim());
+        const tableContainer = document.getElementById('tableContainer');
+        tableContainer.classList.remove('hidden'); // Show the table container
 
-            const tableContainer = document.getElementById('tableContainer');
-            tableContainer.classList.remove('hidden');
+        let tableHTML = '<table><thead><tr>';
 
-            let tableHTML = '<table><thead><tr>';
+        // Add header row
+        columnsToDisplay.forEach(column => {
+            const columnIndex = headers.findIndex(header => header.toLowerCase() === column.toLowerCase());
+            if (columnIndex !== -1) {
+                tableHTML += `<th>${headers[columnIndex]}</th>`;
+            } else {
+                console.error(`Column "${column}" not found in the data.`);
+            }
+        });
+
+        // Add additional columns for credits and grade points
+        tableHTML += '<th>Credits</th><th>Grade Points</th></tr></thead><tbody>';
+
+        // Add data rows
+        const calculations = [];
+        rows.slice(1).forEach(row => {
+            tableHTML += '<tr>';
+            let subjectCode = '';
+            let grade = '';
             columnsToDisplay.forEach(column => {
                 const columnIndex = headers.findIndex(header => header.toLowerCase() === column.toLowerCase());
                 if (columnIndex !== -1) {
-                    tableHTML += `<th>${headers[columnIndex]}</th>`;
+                    const cellData = row[columnIndex];
+                    tableHTML += `<td>${cellData}</td>`;
+                    if (column === 'Subject Code') subjectCode = cellData;
+                    if (column === 'Grade') grade = cellData;
                 } else {
-                    console.error(`Column "${column}" not found in the CSV file.`);
+                    tableHTML += '<td></td>';
                 }
             });
 
-            tableHTML += '<th>Credits</th><th>Grade Points</th></tr></thead><tbody>';
+            // Add credits and grade points
+            const creditPoint = creditPoints[subjectCode] || 'N/A';
+            const gradePoint = gradePoints[grade] || 'N/A';
+            tableHTML += `<td>${creditPoint}</td><td>${gradePoint}</td></tr>`;
 
-            const calculations = [];
-            rows.slice(1).forEach(row => {
-                tableHTML += '<tr>';
-                let subjectCode = '';
-                let grade = '';
-                columnsToDisplay.forEach(column => {
-                    const columnIndex = headers.findIndex(header => header.toLowerCase() === column.toLowerCase());
-                    if (columnIndex !== -1) {
-                        const cellData = row[columnIndex];
-                        tableHTML += `<td>${cellData}</td>`;
-                        if (column === 'Subject Code') subjectCode = cellData;
-                        if (column === 'Grade') grade = cellData;
-                    } else {
-                        tableHTML += '<td></td>';
-                    }
+            if (creditPoint !== 'N/A' && gradePoint !== 'N/A') {
+                calculations.push({
+                    subjectCode,
+                    creditPoint,
+                    gradePoint,
+                    weightedGradePoint: creditPoint * gradePoint
                 });
+            }
+        });
 
-                const creditPoint = creditPoints[subjectCode] || 'N/A';
-                const gradePoint = gradePoints[grade] || 'N/A';
-                tableHTML += `<td>${creditPoint}</td><td>${gradePoint}</td></tr>`;
+        tableHTML += '</tbody></table>';
+        tableContainer.innerHTML = tableHTML;
 
-                if (creditPoint !== 'N/A' && gradePoint !== 'N/A') {
-                    calculations.push({
-                        creditPoint,
-                        gradePoint,
-                        weightedGradePoint: creditPoint * gradePoint
-                    });
-                }
-            });
+        // Show GPA calculation breakdown
+        const gpaContainer = document.getElementById('gpaContainer');
+        gpaContainer.classList.remove('hidden'); // Show the GPA container
 
-            tableHTML += '</tbody></table>';
-            tableContainer.innerHTML = tableHTML;
+        let gpaDetailsHTML = '<h3>GPA Calculation Details</h3>';
+        gpaDetailsHTML += '<ul>';
+        let totalCredits = 0;
+        let totalWeightedGradePoints = 0;
+        calculations.forEach(calc => {
+            totalCredits += calc.creditPoint;
+            totalWeightedGradePoints += calc.weightedGradePoint;
+            gpaDetailsHTML += `<li>${calc.creditPoint} * ${calc.gradePoint} = ${calc.weightedGradePoint}</li>`;
+        });
+        gpaDetailsHTML += '</ul>';
 
-            const gpaContainer = document.getElementById('gpaContainer');
-            gpaContainer.classList.remove('hidden');
+        const gpa = (totalCredits === 0) ? 'N/A' : (totalWeightedGradePoints / totalCredits).toFixed(2);
+        gpaDetailsHTML += `<p>Total Credits: ${totalCredits}</p>`;
+        gpaDetailsHTML += `<p>Total Weighted Grade Points: ${totalWeightedGradePoints}</p>`;
+        gpaDetailsHTML += `<p>GPA: ${gpa}</p>`;
 
-            let gpaDetailsHTML = '<h3>GPA Calculation Details</h3>';
-            gpaDetailsHTML += '<p>The formula for GPA calculation is:</p>';
-            gpaDetailsHTML += '<p><strong>GPA = (Total Weighted Grade Points) / (Total Credits)</strong></p>';
-            gpaDetailsHTML += '<ul class="calculation-list">';
+        gpaContainer.innerHTML = gpaDetailsHTML;
 
-            let totalCredits = 0;
-            let totalWeightedGradePoints = 0;
-            calculations.forEach(calc => {
-                totalCredits += calc.creditPoint;
-                totalWeightedGradePoints += calc.weightedGradePoint;
-                gpaDetailsHTML += `<li>${calc.creditPoint} (Credits) x ${calc.gradePoint} (Grade Points) = ${calc.weightedGradePoint} (Weighted Grade Points)</li>`;
-            });
-
-            gpaDetailsHTML += '</ul>';
-
-            const gpa = (totalCredits === 0) ? 'N/A' : (totalWeightedGradePoints / totalCredits).toFixed(2);
-            gpaDetailsHTML += `<p>Total Credits: ${totalCredits}</p>`;
-            gpaDetailsHTML += `<p>Total Weighted Grade Points: ${totalWeightedGradePoints}</p>`;
-            gpaDetailsHTML += `<p>GPA: ${gpa}</p>`;
-
-            gpaContainer.innerHTML = gpaDetailsHTML;
-
-            const instructions = document.getElementById('instructions');
-            instructions.classList.add('hidden');
-        }
-    };
-
-    reader.readAsText(file);
+        // Hide instructions
+        document.getElementById('instructions').classList.add('hidden');
+    }
 });
 
 const gradePoints = {
@@ -115,27 +108,13 @@ const gradePoints = {
 };
 
 const creditPoints = {
-    'CY23111': 3,
-    'CY23121': 1,
-    'GE23111': 3,
-    'GE23112': 0,
-    'GE23121': 1,
-    'GE23122': 1,
-    'GE23131': 4,
-    'HS23111': 3,
-    'MA23111': 4,
-    'HS23211': 2,
-    'MA23211':4,
-    'AD23211':3,
-    'PH23211':3,
-    'GE23211':3,
-    'GE23213':0,
-    'AD23221':1,
-    'PH23221':1,
-    'GE23221':1,
-    'EC23211':3,
-    'EC23231':4,
-    'GE23231':4,
-    'AD23221':3,
-    'AD23222':1,
+    'CY23111': 3, // Engineering Chemistry
+    'CY23121': 1, // Chemistry Laboratory
+    'GE23111': 3, // Problem Solving and C Programming
+    'GE23112': 0, // Heritage of Tamil
+    'GE23121': 1, // Problem Solving and C Programming Laboratory
+    'GE23122': 1, // Engineering Practices Laboratory
+    'GE23131': 4, // Engineering Graphics
+    'HS23111': 3, // Communicative English
+    'MA23111': 4, // Matrices and Calculus
 };

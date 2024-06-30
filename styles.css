@@ -7,8 +7,9 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
-    height: 100vh;
+    min-height: 100vh;
     flex-direction: column;
+    text-align: center;
 }
 
 h1 {
@@ -16,7 +17,15 @@ h1 {
     color: #0ff;
     text-shadow: 0 0 5px #0ff;
     margin-bottom: 20px;
-    text-align: center;
+}
+
+.container {
+    width: 90%;
+    max-width: 600px;
+    padding: 20px;
+    box-shadow: 0 0 10px #0ff;
+    border-radius: 10px;
+    background: rgba(0, 0, 0, 0.8);
 }
 
 #fileInputContainer {
@@ -45,33 +54,16 @@ h1 {
     display: none;
 }
 
-#toggleInstructions {
-    padding: 10px 20px;
-    background-color: #0ff;
-    color: #000;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: background-color 0.3s;
-    margin-bottom: 20px;
-}
-
-#toggleInstructions:hover {
-    background-color: #0bb;
-}
-
 #instructions {
     display: flex;
     flex-direction: column;
     align-items: center;
     gap: 10px;
     margin-bottom: 20px;
-    max-width: 100%;
-    padding: 0 20px;
 }
 
 #instructions p + img {
-    margin-top: 10px; /* Adjust this value as needed */
+    margin-top: 10px;
 }
 
 #instructions img {
@@ -83,33 +75,18 @@ h1 {
     box-shadow: 0 0 10px #0ff;
 }
 
-table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-top: 20px;
+button {
+    padding: 10px 20px;
+    background-color: #0ff;
+    color: #000;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
 }
 
-th, td {
-    border: 1px solid #0ff;
-    padding: 8px;
-    text-align: left;
-}
-
-th {
+button:hover {
     background-color: #0bb;
-}
-
-.hidden {
-    display: none;
-}
-
-#tableContainer, #gpaContainer, #cgpaContainer, #feedback {
-    margin-top: 20px;
-}
-
-#tableContainer table, #gpaContainer p, #cgpaContainer p, #feedback p {
-    color: #0ff;
-    text-shadow: 0 0 5px #0ff;
 }
 
 #previousGPAContainer {
@@ -117,17 +94,38 @@ th {
     flex-direction: column;
     align-items: center;
     margin-bottom: 20px;
-    width: 100%;
-    padding: 0 20px;
+}
+
+#previousGPAContainer label {
+    margin-bottom: 10px;
 }
 
 #previousGPA {
     padding: 10px;
-    border: 1px solid #0ff;
+    border: 2px solid #0ff;
     border-radius: 5px;
-    background-color: #000;
+    background: transparent;
     color: #0ff;
-    margin-top: 10px;
+    text-align: center;
+}
+
+.hidden {
+    display: none;
+}
+
+table {
     width: 100%;
-    max-width: 300px;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+th, td {
+    padding: 10px;
+    border: 1px solid #0ff;
+    text-align: center;
+}
+
+th {
+    background-color: #0bb;
+    color: #000;
 }

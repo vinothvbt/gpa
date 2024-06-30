@@ -8,15 +8,14 @@
 </head>
 <body>
     <div class="container">
-        <h1>Upload CSV File To Calculate GPA</h1>
+        <h1>Upload CSV File to Calculate GPA</h1>
         <div id="fileInputContainer">
             <label for="fileInput" id="fileInputLabel">Choose File</label>
             <input type="file" id="fileInput" accept=".csv,text/csv">
         </div>
         <button id="toggleInstructions">Show Instructions</button>
         <div id="instructions" class="hidden">
-            <p>Follow these instructions:</p>
-            <p>1. Go to <a href="https://rituat.kalvierp.com/login" target="_blank">rituat.kalvierp.com/login</a> and login.</p>
+            <p>1. Go to <a href="https://rituat.kalvierp.com/login">rituat.kalvierp.com/login</a> and login.</p>
             <img src="in1.jpeg" alt="Instruction 1">
             <p>2. Select Grade Book and click on the CSV option above the semester result data.</p>
             <img src="in2.jpeg" alt="Instruction 2">
@@ -25,12 +24,10 @@
         </div>
         <div id="previousGPAContainer">
             <label for="previousGPA">Enter Previous Year GPA:</label>
-            <input type="number" id="previousGPA" placeholder="Enter GPA" step="0.01">
+            <input type="number" step="0.01" id="previousGPA" placeholder="Previous Year GPA">
         </div>
         <div id="tableContainer" class="hidden"></div>
         <div id="gpaContainer" class="hidden"></div>
-        <div id="cgpaContainer" class="hidden"></div>
-        <div id="feedback" class="hidden"></div>
     </div>
     <script src="script.js"></script>
 </body>

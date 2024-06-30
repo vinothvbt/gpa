@@ -6,7 +6,6 @@ document.getElementById('fileInput').addEventListener('change', function(event) 
         return;
     }
 
-    // Check the file type
     const allowedTypes = ['text/csv', 'application/vnd.ms-excel'];
     if (!allowedTypes.includes(file.type)) {
         alert('Invalid file type. Please upload a CSV file.');
@@ -18,21 +17,15 @@ document.getElementById('fileInput').addEventListener('change', function(event) 
         const text = event.target.result;
         const rows = text.split('\n').map(row => row.split(',').map(cell => cell.replace(/"/g, '').trim()));
 
-        console.log('Parsed CSV Rows:', rows); // Log parsed CSV rows
-
-        // Specify the column names
         const columnsToDisplay = ['Subject Code', 'Subject Title', 'Grade'];
 
         if (rows.length > 0) {
-            const headers = rows[0].map(header => header.trim()); // Trim whitespace from headers
-            console.log('Headers:', headers); // Log headers
+            const headers = rows[0].map(header => header.trim());
 
             const tableContainer = document.getElementById('tableContainer');
-            tableContainer.classList.remove('hidden'); // Show the table container
+            tableContainer.classList.remove('hidden');
 
             let tableHTML = '<table><thead><tr>';
-
-            // Add header row
             columnsToDisplay.forEach(column => {
                 const columnIndex = headers.findIndex(header => header.toLowerCase() === column.toLowerCase());
                 if (columnIndex !== -1) {
@@ -42,10 +35,8 @@ document.getElementById('fileInput').addEventListener('change', function(event) 
                 }
             });
 
-            // Add additional columns for credits and grade points
             tableHTML += '<th>Credits</th><th>Grade Points</th></tr></thead><tbody>';
 
-            // Add data rows
             const calculations = [];
             rows.slice(1).forEach(row => {
                 tableHTML += '<tr>';
@@ -63,14 +54,12 @@ document.getElementById('fileInput').addEventListener('change', function(event) 
                     }
                 });
 
-                // Add credits and grade points
                 const creditPoint = creditPoints[subjectCode] || 'N/A';
                 const gradePoint = gradePoints[grade] || 'N/A';
                 tableHTML += `<td>${creditPoint}</td><td>${gradePoint}</td></tr>`;
 
                 if (creditPoint !== 'N/A' && gradePoint !== 'N/A') {
                     calculations.push({
-                        subjectCode,
                         creditPoint,
                         gradePoint,
                         weightedGradePoint: creditPoint * gradePoint
@@ -81,19 +70,22 @@ document.getElementById('fileInput').addEventListener('change', function(event) 
             tableHTML += '</tbody></table>';
             tableContainer.innerHTML = tableHTML;
 
-            // Show GPA calculation breakdown
             const gpaContainer = document.getElementById('gpaContainer');
-            gpaContainer.classList.remove('hidden'); // Show the GPA container
+            gpaContainer.classList.remove('hidden');
 
             let gpaDetailsHTML = '<h3>GPA Calculation Details</h3>';
-            gpaDetailsHTML += '<ul>';
+            gpaDetailsHTML += '<p>The formula for GPA calculation is:</p>';
+            gpaDetailsHTML += '<p><strong>GPA = (Total Weighted Grade Points) / (Total Credits)</strong></p>';
+            gpaDetailsHTML += '<ul class="calculation-list">';
+
             let totalCredits = 0;
             let totalWeightedGradePoints = 0;
             calculations.forEach(calc => {
                 totalCredits += calc.creditPoint;
                 totalWeightedGradePoints += calc.weightedGradePoint;
-                gpaDetailsHTML += `<li>Subject Code: ${calc.subjectCode}, Credit Points: ${calc.creditPoint}, Grade Points: ${calc.gradePoint}, Weighted Grade Points: ${calc.weightedGradePoint}</li>`;
+                gpaDetailsHTML += `<li>${calc.creditPoint} (Credits) x ${calc.gradePoint} (Grade Points) = ${calc.weightedGradePoint} (Weighted Grade Points)</li>`;
             });
+
             gpaDetailsHTML += '</ul>';
 
             const gpa = (totalCredits === 0) ? 'N/A' : (totalWeightedGradePoints / totalCredits).toFixed(2);
@@ -103,27 +95,13 @@ document.getElementById('fileInput').addEventListener('change', function(event) 
 
             gpaContainer.innerHTML = gpaDetailsHTML;
 
-            // Hide the instructions
-            document.getElementById('instructions').classList.add('hidden');
-
-            // Add animations to GPA calculation details
-            animateCalculationDetails();
+            const instructions = document.getElementById('instructions');
+            instructions.classList.add('hidden');
         }
     };
 
     reader.readAsText(file);
 });
-
-function animateCalculationDetails() {
-    const gpaDetails = document.querySelectorAll('#gpaContainer ul li, #gpaContainer p');
-    gpaDetails.forEach((detail, index) => {
-        detail.style.opacity = 0;
-        detail.style.transition = `opacity 0.5s ease ${index * 0.2}s`;
-        setTimeout(() => {
-            detail.style.opacity = 1;
-        }, index * 200);
-    });
-}
 
 const gradePoints = {
     'O': 10,
@@ -137,13 +115,13 @@ const gradePoints = {
 };
 
 const creditPoints = {
-    'CY23111': 3, // Chemistry
-    'CY23121': 1, // Chemistry Laboratory
-    'GE23111': 3, // Problem Solving and C Programming
-    'GE23112': 0, // Heritage of Tamil
-    'GE23121': 1, // Problem Solving and C Programming Laboratory
-    'GE23122': 1, // Engineering Practices Laboratory
-    'GE23131': 4, // Engineering Graphics
-    'HS23111': 3, // Communicative English
-    'MA23111': 4, // Matrices and Calculus
+    'CY23111': 3,
+    'CY23121': 1,
+    'GE23111': 3,
+    'GE23112': 0,
+    'GE23121': 1,
+    'GE23122': 1,
+    'GE23131': 4,
+    'HS23111': 3,
+    'MA23111': 4,
 };

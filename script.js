@@ -6,7 +6,6 @@ document.getElementById('fileInput').addEventListener('change', function(event) 
         return;
     }
 
-    // Check the file type
     const allowedTypes = ['text/csv', 'application/vnd.ms-excel'];
     if (!allowedTypes.includes(file.type)) {
         alert('Invalid file type. Please upload a CSV file.');
@@ -18,69 +17,56 @@ document.getElementById('fileInput').addEventListener('change', function(event) 
         const text = event.target.result;
         const rows = text.split('\n').map(row => row.split(',').map(cell => cell.replace(/"/g, '').trim()));
 
-        const feedbackContainer = document.getElementById('feedback');
-        feedbackContainer.classList.remove('hidden');
-        feedbackContainer.innerHTML = 'CSV file loaded successfully. Parsing data...';
+        const columnsToDisplay = ['Subject Code', 'Subject Title', 'Credits', 'Grade'];
+        const headers = rows[0].map(header => header.trim());
 
-        setTimeout(() => { // Simulate parsing delay for better UX
-            console.log('Parsed CSV Rows:', rows); // Log parsed CSV rows
+        if (rows.length > 0) {
+            const tableContainer = document.getElementById('tableContainer');
+            tableContainer.classList.remove('hidden');
 
-            // Specify the column names
-            const columnsToDisplay = ['Subject Code', 'Subject Title', 'Grade'];
+            let tableHTML = '<table><thead><tr>';
 
-            if (rows.length > 0) {
-                const headers = rows[0].map(header => header.trim()); // Trim whitespace from headers
-                console.log('Headers:', headers); // Log headers
+            columnsToDisplay.forEach(column => {
+                const columnIndex = headers.findIndex(header => header.toLowerCase() === column.toLowerCase());
+                if (columnIndex !== -1) {
+                    tableHTML += `<th>${headers[columnIndex]}</th>`;
+                } else {
+                    console.error(`Column "${column}" not found in the CSV file.`);
+                }
+            });
+            tableHTML += '</tr></thead><tbody>';
 
-                const tableContainer = document.getElementById('tableContainer');
-                tableContainer.classList.remove('hidden'); // Show the table container
-
-                let tableHTML = '<table><thead><tr>';
-
-                // Add header row
+            rows.slice(1).forEach(row => {
+                tableHTML += '<tr>';
                 columnsToDisplay.forEach(column => {
                     const columnIndex = headers.findIndex(header => header.toLowerCase() === column.toLowerCase());
                     if (columnIndex !== -1) {
-                        tableHTML += `<th>${headers[columnIndex]}</th>`;
+                        tableHTML += `<td>${row[columnIndex]}</td>`;
                     } else {
-                        console.error(`Column "${column}" not found in the CSV file.`);
+                        tableHTML += '<td></td>';
                     }
                 });
-                tableHTML += '</tr></thead><tbody>';
+                tableHTML += '</tr>';
+            });
 
-                // Add data rows
-                rows.slice(1).forEach(row => {
-                    tableHTML += '<tr>';
-                    columnsToDisplay.forEach(column => {
-                        const columnIndex = headers.findIndex(header => header.toLowerCase() === column.toLowerCase());
-                        if (columnIndex !== -1) {
-                            tableHTML += `<td>${row[columnIndex]}</td>`;
-                        } else {
-                            tableHTML += '<td></td>';
-                        }
-                    });
-                    tableHTML += '</tr>';
-                });
+            tableHTML += '</tbody></table>';
+            tableContainer.innerHTML = tableHTML;
 
-                tableHTML += '</tbody></table>';
-                tableContainer.innerHTML = tableHTML;
+            const gpaResult = calculateGPA(rows);
+            const gpaContainer = document.getElementById('gpaContainer');
+            gpaContainer.classList.remove('hidden');
+            gpaContainer.innerHTML = `
+                <p>GPA: ${gpaResult.gpa}</p>
+                <p>Total Credits: ${gpaResult.totalCredits}</p>
+                <p>Total Weighted Grade Points: ${gpaResult.totalWeightedGradePoints}</p>
+            `;
 
-                // Calculate GPA
-                const gpaContainer = document.getElementById('gpaContainer');
-                gpaContainer.classList.remove('hidden'); // Show the GPA container
-                gpaContainer.innerHTML = `<p>GPA: ${calculateGPA(rows)}</p>`;
-
-                // Calculate CGPA
-                const previousGPA = parseFloat(document.getElementById('previousGPA').value);
-                const currentGPA = parseFloat(calculateGPA(rows));
-                if (!isNaN(previousGPA)) {
-                    const cgpa = calculateCGPA(previousGPA, currentGPA);
-                    const cgpaContainer = document.getElementById('cgpaContainer');
-                    cgpaContainer.classList.remove('hidden'); // Show the CGPA container
-                    cgpaContainer.innerHTML = `<p>CGPA: ${cgpa}</p>`;
-                }
+            const previousGPA = parseFloat(document.getElementById('previousGPA').value);
+            if (!isNaN(previousGPA)) {
+                const cgpa = calculateCGPA(previousGPA, parseFloat(gpaResult.gpa));
+                gpaContainer.innerHTML += `<p>CGPA: ${cgpa}</p>`;
             }
-        }, 1000); // 1 second delay for better UX
+        }
     };
 
     reader.readAsText(file);
@@ -98,46 +84,49 @@ function calculateGPA(rows) {
         'F': 0
     };
 
-    const creditPoints = {
-        'CY23111': 3, // Chemistry
-        'CY23121': 1, // Chemistry Laboratory
-        'GE23111': 3, // Problem Solving and C Programming
-        'GE23112': 0, // Heritage of Tamil
-        'GE23121': 1, // Problem Solving and C Programming Laboratory
-        'GE23122': 1, // Engineering Practices Laboratory
-        'GE23131': 4, // Engineering Graphics
-        'HS23111': 3, // Communicative English
-        'MA23111': 4, // Matrices and Calculus
-    };
+    const creditColumn = 'Credits';
+    const gradeColumn = 'Grade';
+    const headers = rows[0];
+    const creditIndex = headers.findIndex(header => header.toLowerCase() === creditColumn.toLowerCase());
+    const gradeIndex = headers.findIndex(header => header.toLowerCase() === gradeColumn.toLowerCase());
+
+    if (creditIndex === -1 || gradeIndex === -1) {
+        console.error('Credit or Grade column not found in the CSV file.');
+        return { gpa: 0, totalCredits: 0, totalWeightedGradePoints: 0 };
+    }
 
     let totalCredits = 0;
     let totalWeightedGradePoints = 0;
 
-    // Loop through rows and calculate weighted grade points
     rows.slice(1).forEach(row => {
-        const subjectCode = row[3].replace(/"/g, '').trim(); // Subject code is in the fourth column
-        const grade = row[5].replace(/"/g, '').trim(); // Grade is in the sixth column
-        if (subjectCode in creditPoints && grade in gradePoints) {
-            const creditPoint = creditPoints[subjectCode];
-            const gradePoint = gradePoints[grade];
-            const weightedGradePoint = creditPoint * gradePoint;
-            totalCredits += creditPoint; // Increment total credits
-            totalWeightedGradePoints += weightedGradePoint; // Increment total weighted grade points
-        } else {
-            console.error(`Subject code "${subjectCode}" or grade "${grade}" not found in the creditPoints or gradePoints.`);
+        const credits = parseFloat(row[creditIndex]);
+        const grade = row[gradeIndex].toUpperCase();
+
+        if (!isNaN(credits) && gradePoints.hasOwnProperty(grade)) {
+            totalCredits += credits;
+            totalWeightedGradePoints += credits * gradePoints[grade];
         }
     });
 
-    if (totalCredits === 0) {
-        return 'N/A';
-    }
-
-    const gpa = totalWeightedGradePoints / totalCredits;
-    return gpa.toFixed(2); // Round GPA to 2 decimal places
+    const gpa = totalCredits > 0 ? totalWeightedGradePoints / totalCredits : 0;
+    return { gpa: gpa.toFixed(2), totalCredits, totalWeightedGradePoints };
 }
 
 function calculateCGPA(previousGPA, currentGPA) {
-    // Assuming equal weights for previous and current GPA for simplicity
-    const cgpa = (previousGPA + currentGPA) / 2;
-    return cgpa.toFixed(2); // Round CGPA to 2 decimal places
+    if (!isNaN(previousGPA) && !isNaN(currentGPA)) {
+        return ((previousGPA + currentGPA) / 2).toFixed(2);
+    } else {
+        return 'N/A';
+    }
 }
+
+document.getElementById('toggleInstructions').addEventListener('click', function() {
+    const instructions = document.getElementById('instructions');
+    if (instructions.classList.contains('hidden')) {
+        instructions.classList.remove('hidden');
+        this.textContent = 'Hide Instructions';
+    } else {
+        instructions.classList.add('hidden');
+        this.textContent = 'Show Instructions';
+    }
+});

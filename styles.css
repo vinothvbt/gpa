@@ -9,6 +9,8 @@ body {
     align-items: center;
     height: 100vh;
     flex-direction: column;
+    overflow: hidden;
+    transition: background-color 0.3s, color 0.3s;
 }
 
 h1 {
@@ -16,6 +18,7 @@ h1 {
     color: #0ff;
     text-shadow: 0 0 5px #0ff;
     margin-bottom: 20px;
+    animation: fadeIn 1s ease-in-out;
 }
 
 #fileInputContainer {
@@ -34,6 +37,7 @@ h1 {
     cursor: pointer;
     transition: background-color 0.3s;
     text-align: center;
+    animation: fadeIn 1s ease-in-out;
 }
 
 #fileInputLabel:hover {
@@ -50,10 +54,11 @@ h1 {
     align-items: center;
     gap: 10px;
     margin-bottom: 20px;
+    animation: fadeIn 1s ease-in-out;
 }
 
 #instructions p + img {
-    margin-top: 10px; /* Adjust this value as needed */
+    margin-top: 10px;
 }
 
 #instructions img {
@@ -64,16 +69,46 @@ h1 {
     box-shadow: 0 0 10px #0ff;
 }
 
+#previousGPAContainer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 20px;
+    animation: fadeIn 1s ease-in-out;
+}
+
+#previousGPAContainer label {
+    color: #0ff;
+    margin-bottom: 5px;
+}
+
+#previousGPA {
+    padding: 10px;
+    border-radius: 5px;
+    border: 1px solid #0ff;
+    background-color: #000;
+    color: #0ff;
+    width: 100px;
+    text-align: center;
+}
+
+#previousGPA:focus {
+    outline: none;
+    box-shadow: 0 0 5px #0ff;
+}
+
 table {
     width: 100%;
     border-collapse: collapse;
     margin-top: 20px;
+    animation: matrixEffect 2s infinite;
 }
 
 th, td {
     border: 1px solid #0ff;
     padding: 8px;
     text-align: left;
+    white-space: nowrap; /* Prevent text wrapping in cells */
 }
 
 th {
@@ -84,11 +119,49 @@ th {
     display: none;
 }
 
-#tableContainer, #gpaContainer {
+#tableContainer, #gpaContainer, #cgpaContainer {
     margin-top: 20px;
 }
 
-#tableContainer table, #gpaContainer p {
+#tableContainer table, #gpaContainer p, #cgpaContainer p {
     color: #0ff;
     text-shadow: 0 0 5px #0ff;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes matrixEffect {
+    0% { transform: translateY(0); }
+    50% { transform: translateY(10px); }
+    100% { transform: translateY(0); }
+}
+
+@media (max-width: 768px) {
+    body {
+        padding: 20px;
+        height: auto;
+    }
+
+    table {
+        width: 100%;
+        overflow-x: auto;
+        display: block;
+    }
+
+    th, td {
+        white-space: nowrap;
+    }
+
+    #fileInputLabel {
+        width: 100%;
+    }
 }

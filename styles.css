@@ -4,6 +4,11 @@ body {
     padding: 0;
     background-color: #000;
     color: #0ff;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    flex-direction: column;
     text-align: center;
 }
 
@@ -21,8 +26,6 @@ h1 {
     box-shadow: 0 0 10px #0ff;
     border-radius: 10px;
     background: rgba(0, 0, 0, 0.8);
-    margin: auto; /* Center align container */
-    margin-top: 20px; /* Add space at the top */
 }
 
 #fileInputContainer {
@@ -80,33 +83,10 @@ button {
     border-radius: 5px;
     cursor: pointer;
     transition: background-color 0.3s;
-    margin-bottom: 20px;
 }
 
 button:hover {
     background-color: #0bb;
-}
-
-#previousGPAContainer {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    margin-bottom: 20px;
-}
-
-#previousGPAContainer label {
-    margin-bottom: 10px;
-}
-
-#previousGPA {
-    padding: 10px;
-    border: 2px solid #0ff;
-    border-radius: 5px;
-    background: transparent;
-    color: #0ff;
-    text-align: center;
-    width: 100%;
-    max-width: 200px; /* Adjust width for mobile */
 }
 
 .hidden {
@@ -130,22 +110,20 @@ th {
     color: #000;
 }
 
-@media (max-width: 600px) {
-    /* Adjustments for smaller screens (e.g., mobile) */
-    .container {
-        width: 100%;
-        margin-top: 0;
-        border-radius: 0;
-        box-shadow: none;
-        padding: 10px;
-    }
+#gpaContainer {
+    margin-top: 20px;
+}
 
-    #previousGPA {
-        max-width: 100%; /* Full width on mobile */
-    }
+h3 {
+    margin-bottom: 10px;
+}
 
-    /* Ensure images in instructions are responsive */
-    #instructions img {
-        max-width: 100%;
-    }
+ul {
+    text-align: left;
+    list-style-type: none;
+    padding: 0;
+}
+
+li {
+    margin-bottom: 5px;
 }
